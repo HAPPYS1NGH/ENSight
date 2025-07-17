@@ -71,9 +71,6 @@ async function resolveEnsAvatar(avatarUri: string | null): Promise<string | null
       const match = avatarUri.match(
         /^eip155:(?<chainId>\d+)\/(erc721|erc1155):(?<contract>0x[0-9a-fA-F]{40})\/(?<tokenId>\d+)$/,
       );
-      console.log(match);
-      console.log(match?.groups);
-
       if (!match || !match.groups) return null;
       const { contract, tokenId } = match.groups;
       // Use OpenSea API (no API key required for most requests)
@@ -142,7 +139,6 @@ export default function Command(props: LaunchProps<{ arguments: Arguments.Lookup
             recs[key] = value ?? null;
           }
         }
-        console.log(recordsResult);
         setRecords(recs);
         setResolverAddress(recordsResult.resolverAddress || null);
         // Fix contentHash: show decoded if object, else string
@@ -155,10 +151,7 @@ export default function Command(props: LaunchProps<{ arguments: Arguments.Lookup
         );
         // Resolve avatar
         const avatarRaw = recs["avatar"];
-        console.log(avatarRaw);
         setAvatarUrl(await resolveEnsAvatar(avatarRaw));
-        console.log("avatarUrl");
-        console.log(avatarUrl);
 
         // Fetch expiry from subgraph
         const expiryValue = await fetchEnsExpiry(name);

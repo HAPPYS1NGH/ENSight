@@ -1,14 +1,14 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
   "name": "ens-sight",
-  "title": "ENSight — ENS Lookup Tool",
+  "title": "Ensight — ENS Lookup Tool",
   "description": "Discover Ethereum identities instantly. ENSight lets you look up Ethereum addresses or ENS names and view associated identity data, onchain and offchain",
   "icon": "ens-icon.png",
   "author": "happysingh",
   "license": "MIT",
   "categories": [
-    "Blockchain",
-    "Utilities"
+    "Productivity",
+    "Web"
   ],
   "commands": [
     {
