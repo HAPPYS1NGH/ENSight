@@ -27,12 +27,18 @@ export default function Command(props: LaunchProps<{ arguments: Arguments.Lookup
 
   useEffect(() => {
     async function resolveENS() {
+      let toast: Toast | undefined = undefined;
       try {
-        await showToast({ style: Toast.Style.Animated, title: `Resolving ${name}...` });
+        toast = await showToast({ style: Toast.Style.Animated, title: `Looking up ENS details...` });
         const provider = new ethers.JsonRpcProvider("https://eth.llamarpc.com");
         const resolved = await provider.resolveName(name);
         if (!resolved) {
           setError("No address found for this name.");
+          if (toast) {
+            toast.style = Toast.Style.Failure;
+            toast.title = "No address found";
+            toast.message = `No address is associated with ${name}.`;
+          }
           setLoading(false);
           return;
         }
@@ -55,8 +61,18 @@ export default function Command(props: LaunchProps<{ arguments: Arguments.Lookup
             setContentHash(null);
           }
         }
+        if (toast) {
+          toast.style = Toast.Style.Success;
+          toast.title = "ENS details found";
+          toast.message = `Details for ${name} loaded successfully.`;
+        }
       } catch (e: unknown) {
         setError("Failed to resolve name.");
+        if (toast) {
+          toast.style = Toast.Style.Failure;
+          toast.title = "Something went wrong";
+          toast.message = `Couldn't load details for ${name}.`;
+        }
       }
       setLoading(false);
     }
@@ -69,15 +85,17 @@ export default function Command(props: LaunchProps<{ arguments: Arguments.Lookup
 
   if (address) {
     let markdown = `**${name}**\n\n**Address:**\n\`\`\`${address}\`\`\``;
-    if (Object.values(records).some((v) => v)) {
+    const hasRecords = Object.values(records).some((v) => v);
+    const avatarUrl = records["avatar"];
+    if (avatarUrl) {
+      markdown += `\n\n**Avatar:**\n<img src="${avatarUrl}" alt="avatar" width="80" height="80" />\n(${avatarUrl})`;
+    }
+    if (hasRecords) {
       markdown += "\n\n**Text Records:**\n";
+      markdown += `| Key | Value |\n| --- | ----- |\n`;
       for (const key of TEXT_KEYS) {
-        if (records[key]) {
-          if (key === "avatar") {
-            markdown += `- **${key}:** ![](${records[key]}) (${records[key]})\n`;
-          } else {
-            markdown += `- **${key}:** ${records[key]}\n`;
-          }
+        if (records[key] && key !== "avatar") {
+          markdown += `| ${key} | ${records[key]} |\n`;
         }
       }
     }
