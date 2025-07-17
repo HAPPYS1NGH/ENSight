@@ -10,16 +10,30 @@
     {
       "name": "lookup-ens-name",
       "title": "Lookup ENS Name",
-      "subtitle": "Resolve an ENS name to an Ethereum address",
-      "description": "Enter an ENS name like vitalik.eth to instantly get the linked wallet address.",
-      "mode": "view"
+      "description": "Resolve ENS or domain name to address",
+      "mode": "view",
+      "arguments": [
+        {
+          "name": "name",
+          "placeholder": "ENS or domain name",
+          "type": "text",
+          "required": true
+        }
+      ]
     },
     {
       "name": "reverse-lookup-address",
       "title": "Reverse Lookup Address",
-      "subtitle": "Find the ENS name for an Ethereum address.",
-      "description": "Enter an Ethereum wallet address and find the linked ENS name, if one is set.",
-      "mode": "view"
+      "description": "Find ENS name for an address",
+      "mode": "view",
+      "arguments": [
+        {
+          "name": "ethAddress",
+          "placeholder": "Ethereum address",
+          "type": "text",
+          "required": true
+        }
+      ]
     }
   ],
   "dependencies": {
