@@ -37,9 +37,12 @@
     }
   ],
   "dependencies": {
+    "@ensdomains/ensjs": "^4.0.2",
     "@raycast/api": "^1.100.3",
     "@raycast/utils": "^2.2.0",
-    "ethers": "^6.15.0"
+    "date-fns": "^4.1.0",
+    "ethers": "^6.15.0",
+    "viem": "^2.32.0"
   },
   "devDependencies": {
     "@raycast/eslint-config": "^1.0.6",
