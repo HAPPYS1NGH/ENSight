@@ -1,6 +1,6 @@
-# ENS Lookup
+# Ensight — ENS Lookup Tool
 
-Search Ethereum Name Service (ENS) names and resolve Ethereum addresses without leaving Raycast. ENS  Address
+Search Ethereum Name Service (ENS) names and resolve Ethereum addresses without leaving Raycast.
 
 ## Features
 
