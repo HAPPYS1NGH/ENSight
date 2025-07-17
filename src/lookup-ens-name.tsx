@@ -1,4 +1,4 @@
-import { ActionPanel, Action, Detail, showToast, Toast, LaunchProps } from "@raycast/api";
+import { ActionPanel, Action, Detail, Icon, LaunchProps, showToast, Toast } from "@raycast/api";
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 
@@ -30,7 +30,9 @@ export default function Command(props: LaunchProps<{ arguments: Arguments.Lookup
       let toast: Toast | undefined = undefined;
       try {
         toast = await showToast({ style: Toast.Style.Animated, title: `Looking up ENS details...` });
-        const provider = new ethers.JsonRpcProvider("https://eth.llamarpc.com");
+        const provider = new ethers.JsonRpcProvider(
+          "https://eth-mainnet.g.alchemy.com/v2/pH0wx1rqHjA0KvL2k8K3gqiziBFRwLKE",
+        );
         const resolved = await provider.resolveName(name);
         if (!resolved) {
           setError("No address found for this name.");
@@ -84,32 +86,90 @@ export default function Command(props: LaunchProps<{ arguments: Arguments.Lookup
   }
 
   if (address) {
-    let markdown = `**${name}**\n\n**Address:**\n\`\`\`${address}\`\`\``;
-    const hasRecords = Object.values(records).some((v) => v);
     const avatarUrl = records["avatar"];
+    const twitter = records["com.twitter"];
+    const github = records["com.github"];
+    const website = records["website"] || records["url"];
+    const discord = records["com.discord"];
+
+    let markdown = "";
     if (avatarUrl) {
-      markdown += `\n\n**Avatar:**\n<img src="${avatarUrl}" alt="avatar" width="80" height="80" />\n(${avatarUrl})`;
+      markdown += `\n<img src="${avatarUrl}" alt="avatar" width="100" height="100" />\n\n---\n`;
     }
-    if (hasRecords) {
-      markdown += "\n\n**Text Records:**\n";
-      markdown += `| Key | Value |\n| --- | ----- |\n`;
-      for (const key of TEXT_KEYS) {
-        if (records[key] && key !== "avatar") {
-          markdown += `| ${key} | ${records[key]} |\n`;
-        }
-      }
-    }
+    markdown += `# ${name}\n`;
+    markdown += `**Address:** \`${address}\`\n\n`;
     if (contentHash) {
-      markdown += `\n**Content Hash:**\n\`${contentHash}\``;
+      markdown += `**Content Hash:** \`${contentHash}\`\n`;
     }
+    // Social links row
+    if (twitter || github || website || discord) {
+      markdown += "\n**Links:** ";
+      if (twitter) markdown += `[🐦 Twitter](https://twitter.com/${twitter.replace(/^@/, "")}) `;
+      if (github) markdown += `[💻 GitHub](https://github.com/${github.replace(/^@/, "")}) `;
+      if (discord) markdown += `[💬 Discord](https://discord.com/users/${discord}) `;
+      if (website) markdown += `[🌐 Website](${website}) `;
+      markdown += "\n";
+    }
+    // Description
+    if (records["description"]) {
+      markdown += `\n> ${records["description"]}\n`;
+    }
+
+    // Only secondary fields in metadata
+    const secondaryKeys = TEXT_KEYS.filter(
+      (key) => !["avatar", "com.twitter", "com.github", "com.discord", "website", "url", "description"].includes(key),
+    );
+
     return (
       <Detail
         isLoading={false}
+        navigationTitle={name}
         markdown={markdown}
+        metadata={
+          secondaryKeys.filter((key) => records[key]).length > 0 ? (
+            <Detail.Metadata>
+              <Detail.Metadata.Label title="Other Details" />
+              {secondaryKeys
+                .filter((key) => records[key])
+                .map((key) => (
+                  <Detail.Metadata.Label key={key} title={key} text={records[key] || "-"} />
+                ))}
+            </Detail.Metadata>
+          ) : undefined
+        }
         actions={
           <ActionPanel>
             <Action.CopyToClipboard content={address} title="Copy Address" />
+            <Action.CopyToClipboard content={name} title="Copy ENS Name" />
             <Action.OpenInBrowser url={`https://etherscan.io/address/${address}`} title="View on Etherscan" />
+            {twitter && (
+              <Action.OpenInBrowser
+                url={`https://twitter.com/${twitter.replace(/^@/, "")}`}
+                title="Open Twitter"
+                icon={Icon.TwoArrowsClockwise}
+              />
+            )}
+            {github && (
+              <Action.OpenInBrowser
+                url={`https://github.com/${github.replace(/^@/, "")}`}
+                title="Open GitHub"
+                icon={Icon.TwoArrowsClockwise}
+              />
+            )}
+            {discord && (
+              <Action.OpenInBrowser
+                url={`https://discord.com/users/${discord}`}
+                title="Open Discord"
+                icon={Icon.TwoArrowsClockwise}
+              />
+            )}
+            {website && <Action.OpenInBrowser url={website} title="Open Website" icon={Icon.Globe} />}
+            {Object.entries(records).map(([key, value]) =>
+              value &&
+              !["avatar", "com.twitter", "com.github", "com.discord", "website", "url", "description"].includes(key) ? (
+                <Action.CopyToClipboard key={key} content={value} title={`Copy ${key}`} />
+              ) : null,
+            )}
           </ActionPanel>
         }
       />
