@@ -1,11 +1,15 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
-  "name": "ens-lookup",
-  "title": "ENS Lookup ",
-  "description": "Search ENS names and resolve Ethereum addresses without leaving Raycast. ENS <-> Address",
-  "icon": "command-icon.png",
-  "author": "harpreetsinghxp",
+  "name": "ens-sight",
+  "title": "ENSight — ENS Lookup Tool",
+  "description": "Discover Ethereum identities instantly. ENSight lets you look up Ethereum addresses or ENS names and view associated identity data, onchain and offchain",
+  "icon": "ens-icon.png",
+  "author": "happysingh",
   "license": "MIT",
+  "categories": [
+    "Blockchain",
+    "Utilities"
+  ],
   "commands": [
     {
       "name": "lookup-ens-name",
@@ -39,9 +43,7 @@
   "dependencies": {
     "@ensdomains/ensjs": "^4.0.2",
     "@raycast/api": "^1.100.3",
-    "@raycast/utils": "^2.2.0",
     "date-fns": "^4.1.0",
-    "ethers": "^6.15.0",
     "viem": "^2.32.0"
   },
   "devDependencies": {
